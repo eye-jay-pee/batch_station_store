@@ -1,0 +1,6 @@
+[package]
+name = "batch_station_store"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
