@@ -2,6 +2,7 @@ use super::{Angle, Field, RecordResult, Station};
 
 #[derive(Clone, Default)]
 pub enum RecordKind {
+    End,
     #[default]
     LinePoint(Station),
     PointOfCurve(Station),
@@ -9,6 +10,9 @@ pub enum RecordKind {
     PointOfTangant(Station),
 }
 impl RecordKind {
+    pub fn new_end() -> RecordResult<Self> {
+        Ok(Self::End)
+    }
     pub fn new_l(f: &Field) -> RecordResult<Self> {
         Ok(Self::LinePoint(Station::from(f.expect_num()?)))
     }

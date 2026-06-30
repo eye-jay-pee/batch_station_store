@@ -3,8 +3,21 @@ use std::fmt;
 #[derive(Copy, Clone, Default)]
 pub struct Line {
     start: Anchor,
+    azimuth: Angle,
+
     end: Anchor,
 }
+impl Line {
+    pub fn new(start: Anchor, end: Anchor) -> LineResult<Self> {
+        Ok(Self {
+            start: start,
+            end: end,
+        }
+        .validate()?)
+    }
+}
+
+#[allow(dead_code)]
 impl Line {
     pub fn set_start(&mut self, start: Anchor) -> LineResult<()> {
         self.start = start;

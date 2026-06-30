@@ -4,6 +4,7 @@ use std::result::Result;
 pub enum FileError {
     IO(std::io::Error),
     UnreadableRecord(RecordError),
+    Expected,
 }
 pub type FileResult<T> = Result<T, FileError>;
 impl From<std::io::Error> for FileError {

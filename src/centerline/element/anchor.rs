@@ -17,6 +17,6 @@ impl Anchor {
 impl fmt::Display for Anchor {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(f, "{} @", self.sta)?;
-        write!(f, "{}", self.pt)
+        writeln!(f, "{}", self.pt)
     }
 }

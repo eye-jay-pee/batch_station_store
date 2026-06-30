@@ -1,44 +1,50 @@
-use super::{Angle, CenterLine,Feature, Curve, Point, Station};
+use super::{Angle, CenterLine, Curve, Feature, Point, Station};
 use std::{
     fs::File,
     io::{BufRead, BufReader},
+    path::{PathBuf},
 };
 mod record;
 pub use record::{Record, RecordError};
 mod error;
 pub use error::{FileError, FileResult};
-impl CenterLine {
-    pub fn load(path: &str) -> FileResult<Self> {
-        let cl = Self::default();
-        let reader = BufReader::new(File::open(path)?);
-        let mut buffer: Option<Feature> = None;
-
+/// represents the contents of a particular centerline file. Used for loading and 
+/// Saving a centerline to carlson's format.
+pub struct CenterLineFile {
+    records: VecDeque<Record>,
+            // its used to save the file, so it IS needed. removing it for now
+            // seems like a good idea, until you forget why this cant impl default
+            // and you cahnge it back only to rememeber you're going in circles.
+            // trust me 
+    _address: PathBuf,
+}
+impl CenterLineFile {
+    /// parse a file, put the contents into a centerline file struct
+    pub fn load(file_path: PathBuf) -> CenterLineFileResult<Self> {
+        let mut cl_file = Self::new(file_path)  ;
         for line in reader.lines() {
-            let record = Record::load(&line?);
-            match record?.kind {
-                Self::LinePoint(s) => {
-                    match buffer {
-                        None => {
-                            let anchor = Anchor::new(record.pos, s);
-                            let line = Line::zero_length(anchor)?;
-                            buffer = Some(Feature::LineSeg(l));
-                        },            
-
-                    }
-                },
-                Self::PointOfCurve(s)=> (),
-                Self::RadiusPoint(a) => (),
-                Self::PointOfTangant(s) =>(),
-            }
+            cl_file.records.push_back(Record::load(&line?)?);
         }
-        Ok(cl)
-    }
-    pub fn save(&self, _path: &str) -> FileResult<()> {
-        //let _writer = BufWriter::new(File::open(path)?);
-
-        Ok(())
+        Ok(cl_file)
     }
 }
-impl CenterLine {
-    fn 
+impl CenterLineFile {
+    pub fn new(path: PathBuf) {
+        Self {
+            // maybe should add some path validation here? 
+            ._address: path,
+            .records: VecDeque::new(),
+
+        }
+    }
+    pub fn deque_record(&mut self) -> Record {
+        match self.records.pop_front() {
+            Some(r) => r,
+            None => Record::End,
+        }
+
+        // rertunr the terminoator record if end of list is reached. 
+        // how to cehck if end of list has been reached?
+        // be sure the parser actually detects null terminator reocords (it dont rn)
+    }
 }

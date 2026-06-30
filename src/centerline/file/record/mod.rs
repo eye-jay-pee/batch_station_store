@@ -8,7 +8,7 @@ use field::{Field, FieldError};
 #[derive(Clone, Default)]
 pub struct Record {
     pub kind: RecordKind,
-    pub pos: Point,
+    pub pos: Anchor,
 }
 impl Record {
     pub fn load(text: &str) -> RecordResult<Self> {
