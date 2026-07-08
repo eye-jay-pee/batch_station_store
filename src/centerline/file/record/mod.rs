@@ -1,14 +1,14 @@
-use super::{Angle, Point, Station};
+use super::{Anchor, Angle, Station};
 mod error;
 pub use error::{RecordError, RecordResult};
 mod kind;
 pub use kind::RecordKind;
 mod field;
 use field::{Field, FieldError};
-#[derive(Clone, Default)]
+#[derive(Debug, Clone, Default)]
 pub struct Record {
     pub kind: RecordKind,
-    pub pos: Anchor,
+    pub anchor: Anchor,
 }
 impl Record {
     pub fn load(text: &str) -> RecordResult<Self> {
@@ -27,8 +27,8 @@ impl Record {
             ..Self::FIELD_COUNT => Err(RecordError::TooFewFields(n)),
             Self::FIELD_COUNT => {
                 let mut record = Self::default();
-                record.pos.easting = fields[4].expect_num()?;
-                record.pos.northing = fields[3].expect_num()?;
+                record.anchor.pt.easting = fields[4].expect_num()?;
+                record.anchor.pt.northing = fields[3].expect_num()?;
                 match fields[2].expect_text()?.as_str() {
                     "L" => record.kind = RecordKind::new_l(&fields[1])?,
                     "PC" => record.kind = RecordKind::new_pc(&fields[1])?,
@@ -38,7 +38,7 @@ impl Record {
                         return Err(RecordError::UnknownKind(idk.to_string()))
                     }
                 };
-                record.pos.id = match fields[0].expect_uint()? {
+                record.anchor.pt.id = match fields[0].expect_uint()? {
                     0 => None,
                     n => Some(n),
                 };

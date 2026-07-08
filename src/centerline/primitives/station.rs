@@ -1,5 +1,5 @@
-use std::fmt;
-#[derive(Copy, Clone, Default)]
+use std::{fmt, ops::Sub};
+#[derive(Debug, Copy, Clone, Default)]
 pub struct Station {
     value: f64,
 }
@@ -19,5 +19,11 @@ impl fmt::Display for Station {
 impl From<f64> for Station {
     fn from(f: f64) -> Self {
         Self { value: f }
+    }
+}
+impl Sub for Station {
+    type Output = f64;
+    fn sub(self, rhs: Station) -> Self::Output {
+        self.value - rhs.value
     }
 }

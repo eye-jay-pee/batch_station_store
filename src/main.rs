@@ -1,7 +1,7 @@
 mod centerline;
-use centerline::{CLResult, CenterLine};
+use centerline::{CenterLine, CenterLineResult};
 
-fn main() -> CLResult<()> {
+fn main() -> CenterLineResult<()> {
     let cl = CenterLine::load("data/bourbon_k7_south.cl")?;
 
     Ok(())

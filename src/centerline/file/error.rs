@@ -6,7 +6,7 @@ pub enum FileError {
     UnreadableRecord(RecordError),
     Expected,
 }
-pub type FileResult<T> = Result<T, FileError>;
+pub type CenterLineFileResult<T> = Result<T, FileError>;
 impl From<std::io::Error> for FileError {
     fn from(e: std::io::Error) -> Self {
         Self::IO(e)

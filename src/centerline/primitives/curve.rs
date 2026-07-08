@@ -1,4 +1,4 @@
-use super::{Anchor, Point};
+use super::{Anchor, CenterLineElement, Point};
 use std::fmt;
 #[derive(Copy, Clone, Default)]
 pub struct Curve {
@@ -6,6 +6,17 @@ pub struct Curve {
     center: Point,
     delta_angle: f64,
     end: Anchor,
+}
+impl CenterLineElement for Curve {
+    fn get_start(&self) -> Anchor {
+        self.start
+    }
+    fn get_end(&self) -> Anchor {
+        self.end
+    }
+    fn get_length(&self) -> f64 {
+        self.end.station - self.start.station
+    }
 }
 #[allow(dead_code)]
 impl Curve {

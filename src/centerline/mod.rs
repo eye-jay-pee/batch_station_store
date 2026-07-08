@@ -1,58 +1,50 @@
 mod error;
-pub use error::CLResult;
-
+pub use error::CenterLineResult;
 mod file;
-//pub use file::FileResult;
-
+pub use file::{CenterLineFile, FileError};
+mod primitives;
+use primitives::{Anchor, Angle, /*Curve,*/ Point, Station};
 mod element;
-use element::{Anchor, Angle, Curve, Point, Station};
+use element::CenterLineElement;
+
+use std::collections::VecDeque;
+use std::path::PathBuf;
 
 #[derive(Clone)]
 pub struct CenterLine {
-    elements: VecDeque<CenterLineElement>,
+    elements: Vec<Box<dyn CenterLineElement>>,
     file: CenterLineFile,
 }
-impl CenterLine {
-    pub fn load(path: &str) -> FileResult<Self> {
-        let cl = Self::new(path);
-        loop {
-            let next_record = cl_file.deque();
-            match cl_file.front() {
-                None => break,
-                Some(Record::End) => break,
-                Some(Record::LinePoint(s)) => {
-                    let line = Feature::LineSeg(Line::new());
-                    
-
-                    
-                }
-                Some(Record::PointOfCurve(s)) => (),
-                Some(Record::RadiusPoint(a)) => (),
-                Some(Record::PointOfTangant(s)) => (),
-            }
-        }
-        Ok(cl)
+impl CenterLineElement for CenterLine {
+    fn get_start(&self) -> Anchor {
+        self.elements.peak_front().get_start()
     }
-    pub fn save(&self, _path: &str) -> FileResult<()> {
-        //let _writer = BufWriter::new(File::open(path)?);
-
-        Ok(())
+    fn get_end(&self) -> Anchor {
+        self.elements.peak_back().get_end()
+    }
+    fn get_length(&self) -> f64 {
+        self.get_end().station - self.get_start().station
     }
 }
 impl CenterLine {
     pub fn new(path: &str) -> CenterLineResult<Self> {
-        let cl = Self {
+        Ok(Self {
             elements: VecDeque::new(),
             file: CenterLineFile::load(PathBuf::from(path))?,
-        }
-        Ok(cl)
+        })
     }
-    pub fn push_back(&mut self, feature: Feature) -> CenterLineResult<()> {
-        self.elements.push_back(feature);
+    pub fn push_back<T, CenterLineElement>(
+        &mut self,
+        element: T,
+    ) -> CenterLineResult<()> {
+        self.elements.push_back(element);
         self.validate()
     }
-    pub fn push_front(&mut self, feature: Feature) -> CenterlineResult<()> {
-        self.elements.push_front(feature);
+    pub fn push_front<T, CenterLineElement>(
+        &mut self,
+        element: T,
+    ) -> CenterLineResult<()> {
+        self.elements.push_front(element);
         self.validate()
     }
 }

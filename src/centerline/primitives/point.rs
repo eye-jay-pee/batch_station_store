@@ -1,6 +1,6 @@
 use std::fmt;
 use std::ops::Sub;
-#[derive(Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default)]
 pub struct Point {
     pub id: Option<u32>,
     pub northing: f64,

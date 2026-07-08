@@ -1,10 +1,10 @@
 use super::{Point, Station};
 use std::fmt;
 
-#[derive(Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default)]
 pub struct Anchor {
-    sta: Station,
-    pt: Point,
+    pub station: Station,
+    pub pt: Point,
 }
 impl Anchor {
     pub fn new(point: Point, station: Station) -> Self {
