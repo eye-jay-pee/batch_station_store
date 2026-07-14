@@ -3,11 +3,13 @@ mod error;
 pub use error::LineResult;
 use std::fmt;
 #[derive(Copy, Default, Clone)]
+#[allow(dead_code)]
 pub struct Line {
     start: Anchor,
     //_azimuth: Angle,
     end: Anchor,
 }
+#[allow(dead_code)]
 impl Line {
     pub fn new(start: Anchor, end: Anchor) -> LineResult<Self> {
         Ok(Self {
@@ -18,11 +20,11 @@ impl Line {
     }
 }
 impl CenterLineElement for Line {
-    fn get_start(&self) -> Anchor {
-        self.start
+    fn get_start(&self) -> Option<Anchor> {
+        Some(self.start)
     }
-    fn get_end(&self) -> Anchor {
-        self.end
+    fn get_end(&self) -> Option<Anchor> {
+        Some(self.end)
     }
     fn get_length(&self) -> f64 {
         self.end.station - self.start.station

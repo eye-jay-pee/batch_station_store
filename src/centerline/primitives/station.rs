@@ -1,5 +1,6 @@
+use serde::{Deserialize, Serialize};
 use std::{fmt, ops::Sub};
-#[derive(Debug, Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default, Deserialize, Serialize)]
 pub struct Station {
     value: f64,
 }

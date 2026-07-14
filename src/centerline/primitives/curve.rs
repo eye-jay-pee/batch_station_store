@@ -1,6 +1,7 @@
 use super::{Anchor, CenterLineElement, Point};
 use std::fmt;
 #[derive(Copy, Clone, Default)]
+#[allow(dead_code)]
 pub struct Curve {
     start: Anchor,
     center: Point,
@@ -8,11 +9,11 @@ pub struct Curve {
     end: Anchor,
 }
 impl CenterLineElement for Curve {
-    fn get_start(&self) -> Anchor {
-        self.start
+    fn get_start(&self) -> Option<Anchor> {
+        Some(self.start)
     }
-    fn get_end(&self) -> Anchor {
-        self.end
+    fn get_end(&self) -> Option<Anchor> {
+        Some(self.end)
     }
     fn get_length(&self) -> f64 {
         self.end.station - self.start.station
@@ -21,10 +22,10 @@ impl CenterLineElement for Curve {
 #[allow(dead_code)]
 impl Curve {
     fn get_radius(&self) -> f64 {
-        self.start.pt - self.center
+        self.center.distance_to(&self.start.point)
     }
     fn get_chord(&self) -> f64 {
-        self.start.pt - self.end.pt
+        self.get_length()
     }
     fn get_degrees_of_arc(&self) -> f64 {
         5729.578 / self.get_radius()

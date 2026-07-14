@@ -1,8 +1,8 @@
-use super::{CenterLine, FileError, Point, Station};
+use super::{CenterLine, Point, Station};
 use std::{/*cmp::Ordering,*/ result::Result};
 #[derive(Debug)]
+#[allow(unused)]
 pub enum CenterLineError {
-    CLFileError(FileError),
     StationGap(usize, Station, Station),
     StationOverlap(usize, Station, Station),
     PositionGap(usize, Point, Point),
@@ -10,7 +10,7 @@ pub enum CenterLineError {
 }
 pub type CenterLineResult<T> = Result<T, CenterLineError>;
 impl CenterLine {
-    pub fn validate(&self) -> CenterLineResult<()> {
+    pub fn _validate(&self) -> CenterLineResult<()> {
         Ok(())
         //for (i, joint) in self.elements.windows(2).enumerate() {
         //    let prev = joint[0].get_end();
@@ -29,14 +29,6 @@ impl CenterLine {
         //        }
         //    }
         //}
-    }
-}
-mod convert {
-    use super::{CenterLineError, FileError};
-    impl From<FileError> for CenterLineError {
-        fn from(err: FileError) -> Self {
-            CenterLineError::CLFileError(err)
-        }
     }
 }
 // impl fmt::Display for CenterLineError {

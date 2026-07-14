@@ -12,7 +12,7 @@ impl Line {
             Err(LineError::NegativeLength)
         } else {
             let station_dist = self.end.station - self.start.station;
-            let point_dist = self.end.pt - self.start.pt;
+            let point_dist = self.end.point.distance_to(&self.start.point);
             if station_dist != point_dist {
                 Err(LineError::LengthConflict)
             } else {

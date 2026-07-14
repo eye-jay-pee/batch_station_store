@@ -6,7 +6,7 @@ mod curve;
 //pub use curve::Curve;
 
 mod angle;
-pub use angle::Angle;
+//pub use angle::Degrees;
 mod anchor;
 pub use anchor::Anchor;
 mod point;

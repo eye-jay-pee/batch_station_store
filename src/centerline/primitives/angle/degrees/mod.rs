@@ -16,7 +16,7 @@ impl Degrees {
     }
     pub fn as_float32(self) -> f32 {
         match self {
-            Self::IEEE64(d) => d as f64,
+            Self::IEEE64(d) => d as f32,
             Self::IEEE32(d) => d,
             Self::Babylon60(d) => d.into(),
         }
@@ -29,13 +29,20 @@ impl Degrees {
         }
     }
     pub fn new_float64(degrees: f64) -> Self {
-        Self::IEEE64(degrees)
+        Self::IEEE64(degrees).normalize()
     }
     pub fn new_float32(degrees: f32) -> Self {
-        Self::IEEE32(degrees)
+        Self::IEEE32(degrees).normalize()
     }
     pub fn new_sexagesimal(degrees: Sexagesimal) -> Self {
-        Self::Babylon60(degrees)
+        Self::Babylon60(degrees).normalize()
+    }
+    pub fn normalize(self) -> Self {
+        match self {
+            Self::IEEE64(d) => Self::new_float64(d % 360.0),
+            Self::IEEE32(d) => Self::new_float32(d % 360.0),
+            Self::Babylon60(s) => Self::new_sexagesimal(s.normalize()),
+        }
     }
 }
 mod traits {
@@ -45,10 +52,11 @@ mod traits {
         use std::fmt::{Display, Formatter, Result};
         impl Display for Degrees {
             fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-                let theta = '\u{03B8}';
+                let degree_sign = '\u{B0}';
                 match self {
-                    Self::Dec(dd) => write!(f, "{}={}", theta, dd),
-                    Self::Sex(sd) => write!(f, "{}={}", theta, sd),
+                    Self::IEEE64(ft) => write!(f, "{}{}", ft, degree_sign),
+                    Self::IEEE32(ft) => write!(f, "{}{}", ft, degree_sign),
+                    Self::Babylon60(sex) => write!(f, "{}", sex),
                 }
             }
         }
@@ -72,7 +80,7 @@ mod traits {
             use super::Degrees;
             impl From<f32> for Degrees {
                 fn from(degrees: f32) -> Self {
-                    Self::new_f32(degrees)
+                    Self::new_float32(degrees)
                 }
             }
             impl From<Degrees> for f32 {
@@ -97,19 +105,23 @@ mod traits {
     }
     mod ops {
         use super::Degrees;
+        /// doing arithmatic directly on Sexagesimal degrees will convert the internal storage type
+        /// into whatever float type was used.
         mod mul {
             use super::Degrees;
             use std::ops::Mul;
             impl Mul<f64> for Degrees {
                 type Output = Self;
                 fn mul(self, rhs: f64) -> Self {
-                    Self::from(self.into() * rhs)
+                    let lhs = self.as_float64();
+                    Self::new_float64(lhs * rhs)
                 }
             }
             impl Mul<f32> for Degrees {
                 type Output = Self;
                 fn mul(self, rhs: f32) -> Self {
-                    Self::from(self.into() * rhs)
+                    let lhs = self.as_float32();
+                    Self::new_float32(lhs * rhs)
                 }
             }
         }
@@ -119,13 +131,15 @@ mod traits {
             impl Div<f64> for Degrees {
                 type Output = Self;
                 fn div(self, rhs: f64) -> Self {
-                    Self::from(self.into() / rhs)
+                    let lhs = self.as_float64();
+                    Self::new_float64(lhs / rhs)
                 }
             }
             impl Div<f32> for Degrees {
                 type Output = Self;
                 fn div(self, rhs: f32) -> Self {
-                    Self::from(self.into() / rhs)
+                    let lhs = self.as_float32();
+                    Self::new_float32(lhs / rhs)
                 }
             }
         }

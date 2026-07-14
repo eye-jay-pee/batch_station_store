@@ -1,50 +1,55 @@
 mod error;
 pub use error::CenterLineResult;
-mod file;
-pub use file::{CenterLineFile, FileError};
 mod primitives;
-use primitives::{Anchor, Angle, /*Curve,*/ Point, Station};
-mod element;
-use element::CenterLineElement;
+use primitives::{Anchor, /*Degrees, Curve,*/ Point, Station};
+mod traits;
+use traits::CenterLineElement;
 
 use std::collections::VecDeque;
-use std::path::PathBuf;
 
-#[derive(Clone)]
 pub struct CenterLine {
-    elements: Vec<Box<dyn CenterLineElement>>,
-    file: CenterLineFile,
+    elements: VecDeque<Box<dyn CenterLineElement>>,
+}
+impl CenterLine {
+    pub fn load(path: &str) -> Self {
+        Self::new(path).unwrap()
+    }
 }
 impl CenterLineElement for CenterLine {
-    fn get_start(&self) -> Anchor {
-        self.elements.peak_front().get_start()
+    fn get_start(&self) -> Option<Anchor> {
+        self.elements.front()?.get_start()
     }
-    fn get_end(&self) -> Anchor {
-        self.elements.peak_back().get_end()
+    fn get_end(&self) -> Option<Anchor> {
+        self.elements.back()?.get_end()
     }
     fn get_length(&self) -> f64 {
-        self.get_end().station - self.get_start().station
+        let start = self.get_start();
+        let end = self.get_end();
+        match (start, end) {
+            (Some(s), Some(e)) => e.station - s.station,
+            _ => 0.0,
+        }
     }
 }
 impl CenterLine {
-    pub fn new(path: &str) -> CenterLineResult<Self> {
+    pub fn new(_path: &str) -> CenterLineResult<Self> {
         Ok(Self {
             elements: VecDeque::new(),
-            file: CenterLineFile::load(PathBuf::from(path))?,
+            //file: CenterLineFile::load(PathBuf::from(path))?,
         })
     }
-    pub fn push_back<T, CenterLineElement>(
-        &mut self,
-        element: T,
-    ) -> CenterLineResult<()> {
-        self.elements.push_back(element);
-        self.validate()
+    pub fn _push_back<T>(&mut self, element: T) -> CenterLineResult<()>
+    where
+        T: CenterLineElement + 'static,
+    {
+        self.elements.push_back(Box::new(element));
+        self._validate()
     }
-    pub fn push_front<T, CenterLineElement>(
-        &mut self,
-        element: T,
-    ) -> CenterLineResult<()> {
-        self.elements.push_front(element);
-        self.validate()
+    pub fn _push_front<T>(&mut self, element: T) -> CenterLineResult<()>
+    where
+        T: CenterLineElement + 'static,
+    {
+        self.elements.push_front(Box::new(element));
+        self._validate()
     }
 }

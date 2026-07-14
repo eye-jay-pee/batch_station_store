@@ -1,22 +1,27 @@
 use super::{Point, Station};
-use std::fmt;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default, Deserialize, Serialize)]
 pub struct Anchor {
     pub station: Station,
-    pub pt: Point,
+    pub point: Point,
 }
+#[allow(dead_code)]
 impl Anchor {
     pub fn new(point: Point, station: Station) -> Self {
-        Self {
-            sta: station,
-            pt: point,
-        }
+        Self { station, point }
     }
 }
-impl fmt::Display for Anchor {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "{} @", self.sta)?;
-        writeln!(f, "{}", self.pt)
+mod traits {
+    use super::Anchor;
+    mod format {
+        use super::Anchor;
+        use std::fmt::{Display, Formatter, Result};
+        impl Display for Anchor {
+            fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+                writeln!(f, "{} @", self.station)?;
+                writeln!(f, "{}", self.point)
+            }
+        }
     }
 }

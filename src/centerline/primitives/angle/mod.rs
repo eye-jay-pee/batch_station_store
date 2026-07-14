@@ -11,23 +11,23 @@ pub enum Angle {
     Radians(Radians),
 }
 impl Angle {
+    pub fn new_degrees(degrees: Degrees) -> Self {
+        Self::Degrees(degrees)
+    }
+    pub fn new_radians(radians: Radians) -> Self {
+        Self::Radians(radians)
+    }
     pub fn as_degrees(self) -> Degrees {
         match self {
             Self::Degrees(d) => d,
-            Self::Radians(r) => Self::new_degrees(r * 180.0 / PI),
+            Self::Radians(r) => Degrees::new_float64(f64::from(r) * 180.0 / PI),
         }
     }
-    pub fn as_radians(self) -> Degrees {
+    pub fn as_radians(self) -> Radians {
         match self {
-            Self::Degrees(d) => Self::new_radians(d * PI / 180.0),
+            Self::Degrees(d) => Radians::new(f64::from(d) * PI / 180.0),
             Self::Radians(r) => r,
         }
-    }
-    pub fn new_degrees(degrees: Degrees) -> Self {
-        Self::degrees(degrees)
-    }
-    pub fn new_radians(radians: Radians) -> Self {
-        Self::radians(radians)
     }
 }
 mod traits {
@@ -39,8 +39,8 @@ mod traits {
             fn fmt(&self, f: &mut Formatter<'_>) -> Result {
                 let theta = '\u{03B8}';
                 match self {
-                    Self::Deg(d) => write!(f, "{}={}", theta, d),
-                    Self::Rad(r) => write!(f, "{}={}", theta, r),
+                    Self::Degrees(d) => write!(f, "{}={}", theta, d),
+                    Self::Radians(r) => write!(f, "{}={}", theta, r),
                 }
             }
         }
