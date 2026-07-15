@@ -9,6 +9,6 @@ use std::io::{Read, Write};
 
 /// definition
 pub trait Store: DeserializeOwned {
-    fn load<R: Read>(rdr: Reader<R>) -> StoreResult<Box<Self>>;
-    fn save<W: Write>(&self, wtr: Writer<W>) -> StoreResult<()>;
+    fn load<R: Read>(rdr: &mut Reader<R>) -> StoreResult<Box<Self>>;
+    fn save<W: Write>(&self, wtr: &mut Writer<W>) -> StoreResult<()>;
 }
