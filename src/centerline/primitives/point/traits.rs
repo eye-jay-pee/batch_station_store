@@ -10,3 +10,25 @@ mod format {
         }
     }
 }
+mod store {
+    use super::Point;
+    use crate::{Store, StoreError, StoreResult};
+    use csv::{Reader, Writer};
+    //use serde::{Deserialize, Serialize};
+    use std::io::{Read, Write};
+
+    impl Store for Point {
+        fn load<R: Read>(mut rdr: Reader<R>) -> StoreResult<Box<Self>> {
+            match rdr.deserialize::<Self>().next() {
+                Some(Ok(point)) => Ok(Box::new(point)),
+                Some(Err(error)) => Err(StoreError::CSV(error)),
+                None => Err(StoreError::EOF),
+            }
+        }
+        fn save<W: Write>(&self, mut wtr: Writer<W>) -> StoreResult<()> {
+            wtr.serialize(self)?;
+            wtr.flush()?;
+            Ok(())
+        }
+    }
+}

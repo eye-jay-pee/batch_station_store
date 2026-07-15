@@ -1,5 +1,6 @@
 #[allow(unused_imports)]
 use super::Point;
+use crate::Store;
 use csv::{ReaderBuilder, Trim, WriterBuilder};
 #[allow(unused_imports)]
 use std::io::{Read, Write};
@@ -33,5 +34,5 @@ fn save_and_load_single_pt(master: Point) {
 
     std::fs::remove_file(path).unwrap();
 
-    assert_eq!(master, copy);
+    assert_eq!(master, *copy);
 }
